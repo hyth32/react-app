@@ -67,6 +67,7 @@ export const InputField = ({
                     initial={false}
                     variants={labelVariants}
                     animate={currentVariant}
+                    transition={{ duration: 0.15 }}
                     className="absolute left-2 px-1 pointer-events-none bg-white"
                 >
                     {label}
