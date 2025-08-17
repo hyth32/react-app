@@ -1,5 +1,6 @@
 import type { UseFormRegisterReturn } from 'react-hook-form'
 import { motion } from 'framer-motion'
+import { useState } from 'react'
 
 interface InputFieldProps {
     label: string
@@ -16,29 +17,57 @@ export const InputField = ({
     error,
     registration,
 }: InputFieldProps) => {
+    const [isFocused, setIsFocused] = useState(false)
+    const [hasValue, setHasValue] = useState(!!registration.value)
+
+    const handleFocus = () => setIsFocused(true)
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        setIsFocused(false)
+        setHasValue(!!e.target.value)
+    }
+
+    const labelVariants = {
+        default: {
+            top: '50%',
+            translateY: '-50%',
+            fontSize: '1rem',
+            color: '#6b7280',
+        },
+        focused: {
+            top: 0,
+            translateY: '-50%',
+            fontSize: '0.75rem',
+            color: '#3b82f6',
+        },
+        error: {
+            top: 0,
+            translateY: '-50%',
+            fontSize: '0.75rem',
+            color: '#ef4444',
+        },
+    }
+
+    const currentVariant = error ? 'error' : isFocused || hasValue ? 'focused' : 'default'
+
     return (
         <div className="relative flex flex-col">
             <div className="relative">
                 <input
                     {...registration}
                     type={type}
-                    placeholder=" "
+                    placeholder={placeholder || ' '}
                     className={`
                         peer border py-2 px-3 rounded w-full outline-none transition text-black
                         ${error ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'}
                     `}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
                 />
                 <motion.label
                     initial={false}
-                    animate={{}}
-                    className={`
-                        absolute left-2 bg-inherit px-1 text-gray-500 transition-all duration-200
-                        pointer-events-none bg-white
-                        top-1/2 -translate-y-1/2 text-base
-                        peer-focus:top-0 peer-focus:-translate-y-1/2 peer-focus:text-sm 
-                        ${error ? 'peer-focus:text-red-500' : 'peer-focus:text-blue-500'}
-                        peer-not-placeholder-shown:top-0 peer-not-placeholder-shown:-translate-y-1/2 peer-not-placeholder-shown:text-sm
-                    `}
+                    variants={labelVariants}
+                    animate={currentVariant}
+                    className="absolute left-2 px-1 pointer-events-none bg-white"
                 >
                     {label}
                 </motion.label>
